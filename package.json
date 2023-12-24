@@ -5,8 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node --env-file=.env --no-warnings index.mjs",
-    "dev": "node --env-file=.env --no-warnings --watch index.mjs"
+    "start": "node -r dotenv/config --env-file=.env --no-warnings index.mjs",
+    "dev": "node -r dotenv/config --env-file=.env --no-warnings --watch index.mjs"
   },
   "keywords": [],
   "author": "theluposki",
