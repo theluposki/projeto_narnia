@@ -1,6 +1,7 @@
 import { Server } from "socket.io";
 import { createServer } from "node:http";
 import { logger } from "../src/utils/index.mjs";
+
 const PORT = process.env.PORT_SOCKET || 3001
 
 const server = createServer();
