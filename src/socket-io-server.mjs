@@ -1,26 +1,30 @@
 // socket-io-server.mjs
 import { Server } from 'socket.io';
 import { logger } from './utils/index.mjs';
+import { spawn } from 'child_process';
 
-const PORT = process.env.PORT_SOCKET || 3001
+let apiProcess;
 
 export function startSocketIOServer() {
-  const io = new Server();
+  const appDirectory = "./";
 
-  io.on('connection', (socket) => {
-    logger.log('Socket', `Worker ${process.pid} - Socket connected: ${socket.id}`);
-    socket.emit('message', 'Hello from socket.io server');
+  process.chdir(appDirectory);
 
-    // Add socket.io event handling logic here
+  const apiServerPath = "./websocket/index.mjs"
 
-    socket.on('disconnect', () => {
-      logger.log('Socket', `Worker ${process.pid} - Socket disconnected: ${socket.id}`);
-    });
+  apiProcess = spawn("node", [
+    "--no-warnings",
+    "--experimental-modules",
+    apiServerPath,
+  ], { stdio: "pipe" });
+
+  apiProcess.stdout.on("data", (data) => {
+    logger.log("SOCKET:stdout",` stdout: ${data}`);
   });
-
-  const socketIOServer = io.listen(Number(PORT))
-
-  socketIOServer.on('listening', () => {
-    logger.log('Socket', `Master - Socket.IO server listening on port ${PORT}`);
+  apiProcess.stderr.on("data", (data) => {
+    logger.err("SOCKET:stderr",` stderr: ${data}`);
+  });
+  apiProcess.on("close", (code) => {
+    logger.log("SOCKET:stdout",`\n stdout: process exited with code ${code}`);
   });
 }
